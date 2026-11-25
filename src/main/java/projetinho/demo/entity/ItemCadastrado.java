@@ -23,6 +23,9 @@ public class ItemCadastrado {
     @Column(length = 500)
     private String img;
 
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+
     public Long getId() {
         return id;
     }
@@ -77,5 +80,13 @@ public class ItemCadastrado {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 }

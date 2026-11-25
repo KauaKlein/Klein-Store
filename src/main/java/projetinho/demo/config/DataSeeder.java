@@ -2,9 +2,14 @@ package projetinho.demo.config;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import projetinho.demo.entity.Carteira;
 import projetinho.demo.entity.ItemCadastrado;
+import projetinho.demo.entity.Usuario;
+import projetinho.demo.repository.CarteiraRepository;
 import projetinho.demo.repository.ItemCadastradoRepository;
+import projetinho.demo.repository.UsuarioRepository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,14 +22,53 @@ import java.util.Map;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
-    private final ItemCadastradoRepository repository;
+    private static final String OWNER_EMAIL = "kaua1floripa@gmail.com";
+    private static final String OWNER_NAME = "Kauã Klein";
+    private static final String OWNER_INITIAL_PASS = "KJ14floripa!";
 
-    public DataSeeder(ItemCadastradoRepository repository) {
-        this.repository = repository;
+    private final ItemCadastradoRepository itemRepository;
+    private final CarteiraRepository carteiraRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public DataSeeder(ItemCadastradoRepository itemRepository,
+                      CarteiraRepository carteiraRepository,
+                      UsuarioRepository usuarioRepository,
+                      PasswordEncoder passwordEncoder) {
+        this.itemRepository = itemRepository;
+        this.carteiraRepository = carteiraRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        // 1. Garante a conta principal do Kauã
+        Usuario owner = usuarioRepository.findByEmailIgnoreCase(OWNER_EMAIL).orElseGet(() -> {
+            Usuario novo = new Usuario();
+            novo.setEmail(OWNER_EMAIL);
+            novo.setNome(OWNER_NAME);
+            novo.setSenha(passwordEncoder.encode(OWNER_INITIAL_PASS));
+            novo.setProvider("LOCAL");
+            return usuarioRepository.save(novo);
+        });
+
+        // 2. Vincula todos os jogos e finanças antigos (usuarioId == null) à conta do Kauã
+        List<ItemCadastrado> jogosSemDono = itemRepository.findByUsuarioIdIsNull();
+        if (!jogosSemDono.isEmpty()) {
+            jogosSemDono.forEach(j -> j.setUsuarioId(owner.getId()));
+            itemRepository.saveAll(jogosSemDono);
+            System.out.println(">>> " + jogosSemDono.size() + " jogos vinculados à conta " + OWNER_EMAIL);
+        }
+
+        List<Carteira> financasSemDono = carteiraRepository.findByUsuarioIdIsNull();
+        if (!financasSemDono.isEmpty()) {
+            financasSemDono.forEach(f -> f.setUsuarioId(owner.getId()));
+            carteiraRepository.saveAll(financasSemDono);
+            System.out.println(">>> " + financasSemDono.size() + " lançamentos vinculados à conta " + OWNER_EMAIL);
+        }
+
+        // 3. Importa seed-jogos.csv na conta do Kauã se ainda não existir nenhum jogo no banco
         ClassPathResource resource = new ClassPathResource("seed-jogos.csv");
         if (!resource.exists()) {
             return;
@@ -60,19 +104,20 @@ public class DataSeeder implements CommandLineRunner {
                 item.setValorVenda(partes[3].isBlank() ? null : Double.parseDouble(partes[3].trim()));
                 item.setStatus(Boolean.parseBoolean(partes[4].trim()));
                 item.setImg(img);
+                item.setUsuarioId(owner.getId());
 
                 itensCsv.add(item);
             }
         }
 
-        if (repository.count() == 0) {
-            repository.saveAll(itensCsv);
-            System.out.println(">>> Planilha importada com sucesso: " + itensCsv.size() + " itens cadastrados com capas.");
+        if (itemRepository.count() == 0) {
+            itemRepository.saveAll(itensCsv);
+            System.out.println(">>> Planilha importada para " + OWNER_EMAIL + ": " + itensCsv.size() + " itens.");
             return;
         }
 
-        // Se o banco já estava populado sem capas, preenche automaticamente os itens com img vazia
-        List<ItemCadastrado> existentes = repository.findAll();
+        // Backfill de capas caso algum item do dono ainda esteja sem img
+        List<ItemCadastrado> existentes = itemRepository.findByUsuarioId(owner.getId());
         List<ItemCadastrado> paraAtualizar = new ArrayList<>();
         for (ItemCadastrado item : existentes) {
             if (item.getImg() == null || item.getImg().isBlank()) {
@@ -83,10 +128,8 @@ public class DataSeeder implements CommandLineRunner {
                 }
             }
         }
-
         if (!paraAtualizar.isEmpty()) {
-            repository.saveAll(paraAtualizar);
-            System.out.println(">>> Capas atualizadas automaticamente em " + paraAtualizar.size() + " itens.");
+            itemRepository.saveAll(paraAtualizar);
         }
     }
 }

@@ -3,177 +3,415 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Klein Store — Controle de Vendas</title>
+  <title>KLEIN STORE — Gestão de Jogos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   />
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="ambient-bg" aria-hidden="true"></div>
 
-  <div class="app-shell">
-    <!-- Topbar -->
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- ================= TELA DE LOGIN / CADASTRO ================= -->
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm0 2.3L18.6 8 12 11.7 5.4 8 12 4.3zM5 9.8l6 3.4v6.5l-6-3.3V9.8zm14 6.6l-6 3.3v-6.5l6-3.4v6.6z" />
+          </svg>
+        </div>
+        <span class="brand-name">KLEIN STORE</span>
+      </div>
+
+      <p id="auth-subtitle" class="auth-subtitle">Entre na sua conta para acessar seus jogos e finanças na nuvem</p>
+
+      <div class="auth-tabs" role="tablist">
+        <button id="tab-auth-login" class="auth-tab active" type="button">Entrar</button>
+        <button id="tab-auth-register" class="auth-tab" type="button">Criar Conta</button>
+      </div>
+
+      <button id="btn-google-login" class="btn-google" type="button">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        <span>Continuar com Google</span>
+      </button>
+
+      <div class="auth-divider"><span>ou com e-mail e senha</span></div>
+
+      <form id="form-auth" autocomplete="on">
+        <div id="auth-nome-group" class="field-group hidden">
+          <label class="field-label" for="auth-nome">Seu nome</label>
+          <input id="auth-nome" class="field-input" type="text" name="name" autocomplete="name" placeholder="Ex: João Silva" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="auth-email">E-mail</label>
+          <input id="auth-email" class="field-input" type="email" name="username" autocomplete="username" placeholder="seuemail@gmail.com" required />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="auth-senha">Senha</label>
+          <input id="auth-senha" class="field-input" type="password" name="password" autocomplete="current-password" placeholder="••••••••" required minlength="6" />
+        </div>
+
+        <div id="auth-error" class="auth-error hidden"></div>
+
+        <button id="btn-auth-submit" class="btn-auth-submit" type="submit">Entrar na Conta</button>
+      </form>
+
+      <p class="auth-note">Sua sessão fica salva automaticamente neste dispositivo.</p>
+    </div>
+  </div>
+
+  <div id="app-layout" class="layout hidden">
+    <!-- Sidebar esquerda estilo Arcadia -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm0 2.3L18.6 8 12 11.7 5.4 8 12 4.3zM5 9.8l6 3.4v6.5l-6-3.3V9.8zm14 6.6l-6 3.3v-6.5l6-3.4v6.6z" />
+          </svg>
+        </div>
+        <span class="brand-name">KLEIN STORE</span>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Navegação principal">
+        <button class="nav-item active" data-nav="dashboard" type="button">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-nav="catalogo" type="button">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="6" width="20" height="12" rx="4" />
-            <path d="M6 12h4" />
-            <path d="M8 10v4" />
+            <path d="M6 12h4" /><path d="M8 10v4" />
             <circle cx="15.5" cy="11" r="0.8" fill="currentColor" />
             <circle cx="17.5" cy="13" r="0.8" fill="currentColor" />
           </svg>
-        </div>
-        <div class="brand-text">
-          <h1>Klein Store</h1>
-          <span class="subtitle">Gestão de Lotes &amp; Vendas</span>
-        </div>
-      </div>
-
-      <div class="topbar-right">
-        <span id="status-api" class="status-pill status-pending">
-          <span class="status-dot"></span>
-          <span class="status-text">Aguardando /api/jogos</span>
-        </span>
-
-        <button id="btn-api-info" class="btn btn-ghost" type="button" title="Ver endpoints esperados pela tela">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6" />
-            <polyline points="8 6 2 12 8 18" />
-          </svg>
-          <span>API</span>
+          <span>Catálogo</span>
+          <span id="nav-count-all" class="nav-badge mono">0</span>
         </button>
 
-        <button id="btn-recarregar" class="btn btn-ghost btn-icon-only" type="button" title="Recarregar dados">
+        <button class="nav-item" data-nav="financas" type="button">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+            <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+          </svg>
+          <span>Finanças</span>
+          <span id="nav-count-financas" class="nav-badge mono">0</span>
+        </button>
+      </nav>
+
+      <!-- Lista lateral: Maiores Lucros (como Online Friends no Arcadia) -->
+      <div class="sidebar-section">
+        <span class="sidebar-section-title">Maiores Lucros</span>
+        <div id="sidebar-top-profits" class="sidebar-mini-list"></div>
+      </div>
+
+      <!-- Rodapé da sidebar -->
+      <div class="sidebar-footer">
+        <div id="profile-avatar" class="profile-avatar">KS</div>
+        <div class="profile-info">
+          <span id="profile-name" class="profile-name">Usuário</span>
+          <span id="status-api" class="status-inline status-pending">
+            <span class="status-dot"></span>
+            <span class="status-text">Conectando...</span>
+          </span>
+        </div>
+        <button id="btn-logout" class="btn-logout" type="button" title="Sair da conta">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12a9 9 0 1 1-2.64-6.36" />
-            <polyline points="21 3 21 9 15 9" />
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-        </button>
-
-        <button id="btn-novo-jogo" class="btn btn-primary" type="button">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          <span>Novo Item</span>
         </button>
       </div>
-    </header>
+    </aside>
 
     <!-- Conteúdo principal -->
-    <main class="main-content">
-      <!-- Cards de resumo -->
-      <section class="summary-grid" aria-label="Resumo financeiro">
-        <article class="summary-card">
-          <div class="summary-top">
-            <span class="summary-label">Itens no catálogo</span>
-            <span class="summary-icon icon-neutral">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-              </svg>
-            </span>
-          </div>
-          <strong id="stat-total-jogos" class="summary-value mono">0</strong>
-        </article>
+    <div class="content-area">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="search-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            id="input-busca"
+            type="text"
+            placeholder="Buscar jogos ou número do lote..."
+            autocomplete="off"
+          />
+        </div>
 
-        <article class="summary-card">
-          <div class="summary-top">
-            <span class="summary-label">Total Pago (Custo)</span>
-            <span class="summary-icon icon-blue">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="1" x2="12" y2="23" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
-            </span>
-          </div>
-          <strong id="stat-total-preco" class="summary-value mono">R$ 0,00</strong>
-        </article>
-
-        <article class="summary-card">
-          <div class="summary-top">
-            <span class="summary-label">Receita (Vendidos)</span>
-            <span class="summary-icon icon-violet">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                <polyline points="17 6 23 6 23 12" />
-              </svg>
-            </span>
-          </div>
-          <strong id="stat-total-venda" class="summary-value mono">R$ 0,00</strong>
-        </article>
-
-        <article class="summary-card card-highlight">
-          <div class="summary-top">
-            <span class="summary-label">Lucro Estimado</span>
-            <span class="summary-icon icon-emerald">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="8 12 11 15 16 9" />
-              </svg>
-            </span>
-          </div>
-          <strong id="stat-lucro" class="summary-value mono positive">R$ 0,00</strong>
-        </article>
-      </section>
-
-      <!-- Painel da tabela -->
-      <section class="panel">
-        <div class="panel-header">
-          <div class="search-box">
-            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        <div class="topbar-pills">
+          <button id="btn-api-info" class="icon-circle-btn" type="button" title="Contrato da API">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
             </svg>
-            <input
-              id="input-busca"
-              class="search-input"
-              type="text"
-              placeholder="Buscar por nome do jogo ou número do lote..."
-            />
-          </div>
-          <span id="table-count" class="table-count">0 registros</span>
-        </div>
+          </button>
 
-        <div id="empty-state" class="empty-state hidden">
-          <div class="empty-badge">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="6" width="20" height="12" rx="4" />
-              <path d="M6 12h4" />
-              <path d="M8 10v4" />
-              <circle cx="15.5" cy="11" r="0.8" fill="currentColor" />
-              <circle cx="17.5" cy="13" r="0.8" fill="currentColor" />
+          <button id="btn-recarregar" class="icon-circle-btn" type="button" title="Recarregar dados">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+              <polyline points="21 3 21 9 15 9" />
             </svg>
-          </div>
-          <h2>Nenhum item cadastrado</h2>
-          <p>
-            Assim que o endpoint <code>/api/jogos</code> responder no seu back-end,
-            seus itens aparecerão aqui. Clique em <strong>Novo Item</strong> para cadastrar.
-          </p>
-        </div>
+          </button>
 
-        <div id="table-wrapper" class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th class="col-lote">Lote</th>
-                <th class="col-nome">Item</th>
-                <th class="col-money">Valor Pago</th>
-                <th class="col-money">Valor Venda</th>
-                <th class="col-money">Lucro</th>
-                <th class="col-status">Status</th>
-                <th class="col-actions">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="jogos-body"></tbody>
-          </table>
+          <button id="btn-novo-jogo" class="btn-cta-white" type="button">
+            <span>+ Novo Item</span>
+          </button>
+
+          <button id="btn-logout-mobile" class="icon-circle-btn mobile-only-btn" type="button" title="Sair da conta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
         </div>
-      </section>
-    </main>
+      </header>
+
+      <main class="main-scroll">
+        <!-- Painel Financeiro (Investido, Faturamento, Lucro + Capital Recuperado) -->
+        <section id="dashboard-hero-section" class="finance-dashboard">
+          <div class="kpi-grid">
+            <article class="kpi-card kpi-invested">
+              <div class="kpi-head">
+                <span class="kpi-label">Investido</span>
+                <span class="kpi-icon icon-sky">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                </span>
+              </div>
+              <strong id="stat-total-preco" class="kpi-value mono">R$ 0,00</strong>
+              <span id="stat-total-jogos-sub" class="kpi-sub">0 itens • 0 em estoque</span>
+            </article>
+
+            <article class="kpi-card kpi-revenue">
+              <div class="kpi-head">
+                <span class="kpi-label">Faturamento</span>
+                <span class="kpi-icon icon-crimson">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                    <polyline points="17 6 23 6 23 12" />
+                  </svg>
+                </span>
+              </div>
+              <strong id="stat-total-venda" class="kpi-value mono">R$ 0,00</strong>
+              <span id="stat-sold-sub" class="kpi-sub">0 vendas concluídas</span>
+            </article>
+
+            <article class="kpi-card kpi-profit">
+              <div class="kpi-head">
+                <span class="kpi-label">Lucro Líquido</span>
+                <span class="kpi-icon icon-emerald">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="8 12 11 15 16 9" />
+                  </svg>
+                </span>
+              </div>
+              <strong id="stat-lucro" class="kpi-value mono positive">R$ 0,00</strong>
+              <span id="stat-falta-sub" class="kpi-sub">Margem média 0%</span>
+            </article>
+          </div>
+
+          <div class="recovery-card">
+            <div id="recovery-fill" class="recovery-fill" style="width: 0%"></div>
+            <div class="recovery-inner">
+              <div class="recovery-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                  <polyline points="17 6 23 6 23 12" />
+                </svg>
+              </div>
+              <div class="recovery-text">
+                <strong>Capital Recuperado</strong>
+                <span id="stat-recovery-sub" class="mono">0% do investimento</span>
+              </div>
+              <div id="stat-recovery-pct" class="recovery-pct mono">0%</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Catálogo Principal (tabs + alternador Grade / Planilha) -->
+        <section id="catalog-section" class="catalog-section">
+          <div class="catalog-header">
+            <div class="catalog-left">
+              <h3 id="catalog-title">Catálogo de Jogos</h3>
+              <div class="filter-tabs" role="tablist">
+                <button class="tab-btn active" data-filter="todos" type="button">Todos</button>
+                <button class="tab-btn" data-filter="estoque" type="button">Em Estoque</button>
+                <button class="tab-btn" data-filter="vendidos" type="button">Vendidos</button>
+              </div>
+            </div>
+
+            <div class="catalog-right">
+              <span id="table-count" class="count-label">0 registros</span>
+              <div class="view-switch" role="group" aria-label="Modo de visualização">
+                <button id="btn-view-grid" class="view-btn active" type="button" title="Grade de Capas">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                </button>
+                <button id="btn-view-table" class="view-btn" type="button" title="Visualização em Planilha">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="empty-state" class="empty-state hidden">
+            <h2>Nenhum jogo encontrado</h2>
+            <p>Clique em <strong>+ Novo Item</strong> para cadastrar seu primeiro jogo ou limpe o filtro de busca.</p>
+          </div>
+
+          <!-- Modo Grade de Capas (estilo Arcadia Popular Games) -->
+          <div id="cards-grid" class="cards-grid"></div>
+
+          <!-- Modo Planilha / Tabela -->
+          <div id="table-wrapper" class="table-wrapper hidden">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-lote">Lote</th>
+                  <th class="col-nome">Item</th>
+                  <th class="col-money">Valor Pago</th>
+                  <th class="col-money">Valor Venda</th>
+                  <th class="col-money">Lucro</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-actions">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="jogos-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= VISÃO FINANÇAS (Ganhos & Gastos) ================= -->
+        <section id="financas-view" class="financas-view hidden">
+          <div class="financas-topbar">
+            <div>
+              <h2 class="financas-title">Minhas Finanças</h2>
+              <p class="financas-subtitle">Salário, ganhos extras e gastos organizados por categoria</p>
+            </div>
+            <div class="financas-actions">
+              <span id="status-financas" class="financas-status pending">Aguardando /api/financas</span>
+              <button id="btn-nova-financa" class="btn-cta-white" type="button">+ Novo Lançamento</button>
+            </div>
+          </div>
+
+          <!-- 3 KPIs financeiros -->
+          <div class="kpi-grid">
+            <article class="kpi-card kpi-invested">
+              <div class="kpi-head">
+                <span class="kpi-label">Saldo Atual</span>
+                <span class="kpi-icon icon-sky">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                  </svg>
+                </span>
+              </div>
+              <strong id="fin-saldo" class="kpi-value mono">R$ 0,00</strong>
+              <span id="fin-saldo-sub" class="kpi-sub">Entradas menos saídas</span>
+            </article>
+
+            <article class="kpi-card kpi-profit">
+              <div class="kpi-head">
+                <span class="kpi-label">Ganhos (Entradas)</span>
+                <span class="kpi-icon icon-emerald">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="12" y1="19" x2="12" y2="5" />
+                    <polyline points="5 12 12 5 19 12" />
+                  </svg>
+                </span>
+              </div>
+              <strong id="fin-entradas" class="kpi-value mono positive">R$ 0,00</strong>
+              <span id="fin-entradas-sub" class="kpi-sub">0 entradas registradas</span>
+            </article>
+
+            <article class="kpi-card kpi-revenue">
+              <div class="kpi-head">
+                <span class="kpi-label">Gastos (Saídas)</span>
+                <span class="kpi-icon icon-crimson">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <polyline points="19 12 12 19 5 12" />
+                  </svg>
+                </span>
+              </div>
+              <strong id="fin-saidas" class="kpi-value mono negative">R$ 0,00</strong>
+              <span id="fin-saidas-sub" class="kpi-sub">0 gastos registrados</span>
+            </article>
+          </div>
+
+          <!-- Corpo em 2 colunas: Lançamentos + Resumo por Categoria -->
+          <div class="financas-grid">
+            <div class="financas-panel">
+              <div class="financas-panel-head">
+                <div class="filter-tabs" role="tablist">
+                  <button class="fin-tab-btn active" data-fin-filter="todos" type="button">Todos</button>
+                  <button class="fin-tab-btn" data-fin-filter="ENTRADA" type="button">Ganhos</button>
+                  <button class="fin-tab-btn" data-fin-filter="SAIDA" type="button">Gastos</button>
+                </div>
+
+                <select id="fin-filtro-categoria" class="fin-select" aria-label="Filtrar por categoria">
+                  <option value="todas">Todas as categorias</option>
+                </select>
+              </div>
+
+              <div id="fin-empty-state" class="empty-state hidden">
+                <h2>Nenhum lançamento ainda</h2>
+                <p>Assim que o endpoint <code>/api/financas</code> estiver pronto no seu back-end, clique em <strong>+ Novo Lançamento</strong> para registrar seu salário, extras e gastos.</p>
+              </div>
+
+              <div id="fin-lista" class="fin-lista"></div>
+            </div>
+
+            <aside class="financas-panel">
+              <div class="financas-panel-head">
+                <h3 class="panel-subtitle">Por Categoria</h3>
+                <div class="mini-switch">
+                  <button class="cat-mode-btn active" data-cat-mode="SAIDA" type="button">Gastos</button>
+                  <button class="cat-mode-btn" data-cat-mode="ENTRADA" type="button">Ganhos</button>
+                </div>
+              </div>
+              <div id="fin-categorias-resumo" class="cat-bars-list"></div>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <!-- Modal: Criar / Editar Item -->
@@ -182,7 +420,7 @@
       <div class="modal-header">
         <div>
           <h2 id="modal-jogo-title">Novo Item</h2>
-          <p class="modal-subtitle">Informe os dados do lote, valores, capa e status</p>
+          <p class="modal-subtitle">Informe os dados do lote, valor pago e capa do jogo</p>
         </div>
         <button class="modal-close" data-close-modal type="button" aria-label="Fechar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -269,8 +507,103 @@
         </div>
 
         <div class="modal-actions">
-          <button class="btn btn-ghost" data-close-modal type="button">Cancelar</button>
-          <button id="btn-salvar-jogo" class="btn btn-primary" type="submit">Salvar Registro</button>
+          <button class="btn-modal-ghost" data-close-modal type="button">Cancelar</button>
+          <button id="btn-salvar-jogo" class="btn-modal-primary" type="submit">Salvar Registro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Criar / Editar Lançamento Financeiro -->
+  <div id="modal-financa" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-financa-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-financa-title">Novo Lançamento</h2>
+          <p class="modal-subtitle">Registre seu salário, ganhos extras ou gastos por categoria</p>
+        </div>
+        <button class="modal-close" data-close-modal type="button" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="form-financa">
+        <input type="hidden" id="fin-input-id" />
+
+        <div class="field-group">
+          <label class="field-label">Tipo</label>
+          <div class="tipo-toggle-grid">
+            <button type="button" class="tipo-option active-entrada" data-tipo="ENTRADA" id="btn-tipo-entrada">
+              ↑ Ganho (Entrada)
+            </button>
+            <button type="button" class="tipo-option" data-tipo="SAIDA" id="btn-tipo-saida">
+              ↓ Gasto (Saída)
+            </button>
+          </div>
+          <input type="hidden" id="fin-input-tipo" value="ENTRADA" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="fin-input-descricao">Descrição</label>
+          <input
+            id="fin-input-descricao"
+            class="field-input"
+            type="text"
+            placeholder="Ex: Salário mensal, Freelance, Supermercado..."
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="fin-input-valor">Valor (R$)</label>
+            <input
+              id="fin-input-valor"
+              class="field-input mono"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="0.00"
+              required
+            />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="fin-input-data">Data</label>
+            <input
+              id="fin-input-data"
+              class="field-input mono"
+              type="date"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="fin-input-categoria">Categoria</label>
+          <select id="fin-input-categoria" class="field-input fin-modal-select" required>
+            <option value="Salário">Salário</option>
+            <option value="Renda Extra">Renda Extra</option>
+            <option value="Vendas de Jogos">Vendas de Jogos</option>
+            <option value="Investimentos">Investimentos</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Moradia">Moradia</option>
+            <option value="Contas Fixas">Contas Fixas</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Compras">Compras</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-modal-ghost" data-close-modal type="button">Cancelar</button>
+          <button class="btn-modal-primary" type="submit">Salvar Lançamento</button>
         </div>
       </form>
     </div>
@@ -281,8 +614,8 @@
     <div class="modal-card modal-wide">
       <div class="modal-header">
         <div>
-          <h2 id="modal-api-title">Contrato da API</h2>
-          <p class="modal-subtitle">Alinhado com a sua entidade <code>ItemCadastrado</code></p>
+          <h2 id="modal-api-title">API REST — Klein Store</h2>
+          <p class="modal-subtitle">Endpoints consumidos pela interface</p>
         </div>
         <button class="modal-close" data-close-modal type="button" aria-label="Fechar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -292,46 +625,71 @@
         </button>
       </div>
 
-      <div class="api-docs">
-        <pre class="code-block">{
+      <pre class="code-block">{
   "id": 1,
-  "idLote": 10,
-  "nome": "Elden Ring",
-  "valorPago": 150.00,
-  "valorVenda": 220.00,
-  "status": false,
-  "img": "https://exemplo.com/capa.jpg"
+  "idLote": 1,
+  "nome": "Dark Souls 3",
+  "valorPago": 50.84,
+  "valorVenda": 85.00,
+  "status": true,
+  "img": "https://..."
 }</pre>
 
-        <div class="endpoint-list">
-          <div class="endpoint-item">
-            <span class="method method-get">GET</span>
-            <code>/api/jogos</code>
-            <span class="endpoint-desc">Lista todos os itens</span>
-          </div>
-          <div class="endpoint-item">
-            <span class="method method-post">POST</span>
-            <code>/api/jogos</code>
-            <span class="endpoint-desc">Cadastra um novo item</span>
-          </div>
-          <div class="endpoint-item">
-            <span class="method method-put">PUT</span>
-            <code>/api/jogos/{id}</code>
-            <span class="endpoint-desc">Atualiza item / status</span>
-          </div>
-          <div class="endpoint-item">
-            <span class="method method-delete">DELETE</span>
-            <code>/api/jogos/{id}</code>
-            <span class="endpoint-desc">Remove pelo ID</span>
-          </div>
-        </div>
+      <div class="endpoint-list">
+        <div class="endpoint-item"><span class="method method-get">GET</span><code>/api/jogos</code><span class="endpoint-desc">Lista todos os itens</span></div>
+        <div class="endpoint-item"><span class="method method-post">POST</span><code>/api/jogos</code><span class="endpoint-desc">Cadastra novo item</span></div>
+        <div class="endpoint-item"><span class="method method-put">PUT</span><code>/api/jogos/{id}</code><span class="endpoint-desc">Atualiza item / status</span></div>
+        <div class="endpoint-item"><span class="method method-delete">DELETE</span><code>/api/jogos/{id}</code><span class="endpoint-desc">Remove pelo ID</span></div>
+      </div>
+
+      <p class="modal-subtitle" style="margin-bottom: 8px; color: var(--text);">Módulo Finanças (<code>/api/financas</code>)</p>
+      <pre class="code-block">{
+  "id": 1,
+  "descricao": "Salário mensal",
+  "valor": 2500.00,
+  "tipo": "ENTRADA",
+  "categoria": "Salário",
+  "data": "2026-11-25"
+}</pre>
+      <div class="endpoint-list">
+        <div class="endpoint-item"><span class="method method-get">GET</span><code>/api/financas</code><span class="endpoint-desc">Lista lançamentos</span></div>
+        <div class="endpoint-item"><span class="method method-post">POST</span><code>/api/financas</code><span class="endpoint-desc">Cria lançamento</span></div>
+        <div class="endpoint-item"><span class="method method-put">PUT</span><code>/api/financas/{id}</code><span class="endpoint-desc">Edita lançamento</span></div>
+        <div class="endpoint-item"><span class="method method-delete">DELETE</span><code>/api/financas/{id}</code><span class="endpoint-desc">Remove lançamento</span></div>
       </div>
 
       <div class="modal-actions">
-        <button class="btn btn-primary" data-close-modal type="button">Fechar</button>
+        <button class="btn-modal-primary" data-close-modal type="button">Fechar</button>
       </div>
     </div>
   </div>
+
+  <!-- Barra de navegação inferior (visível somente no celular/tablet) -->
+  <nav class="mobile-bottom-nav" aria-label="Navegação mobile">
+    <button class="mobile-nav-btn active" data-nav="dashboard" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+      </svg>
+      <span>Dashboard</span>
+    </button>
+    <button class="mobile-nav-btn" data-nav="catalogo" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="6" width="20" height="12" rx="4" />
+        <path d="M6 12h4" /><path d="M8 10v4" />
+      </svg>
+      <span>Catálogo</span>
+    </button>
+    <button class="mobile-nav-btn" data-nav="financas" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+      </svg>
+      <span>Finanças</span>
+    </button>
+  </nav>
 
   <!-- Notificações -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
