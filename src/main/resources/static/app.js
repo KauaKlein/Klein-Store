@@ -6,11 +6,14 @@
 const API_URL = "/api/jogos";
 const API_FINANCAS = "/api/financas";
 const API_AUTH = "/api/auth";
+const API_MERCADO_NOTICIAS = "/api/mercado/noticias";
 
 const state = {
   usuario: null,
   googleEnabled: false,
   authMode: "login", // login | register
+  mercadoInicializado: false,
+  chartSymbol: "FX_IDC:USDBRL",
   itens: [],
   financas: [],
   busca: "",
@@ -44,6 +47,13 @@ const els = {
   navCountAll: document.getElementById("nav-count-all"),
   navCountFinancas: document.getElementById("nav-count-financas"),
   sidebarTopProfits: document.getElementById("sidebar-top-profits"),
+  marketView: document.getElementById("dashboard-market-view"),
+  tvMiniDolar: document.getElementById("tv-mini-dolar"),
+  tvMiniIbov: document.getElementById("tv-mini-ibov"),
+  tvMiniBtc: document.getElementById("tv-mini-btc"),
+  tvMainChart: document.getElementById("tv-main-chart"),
+  marketNewsList: document.getElementById("market-news-list"),
+  btnReloadNews: document.getElementById("btn-reload-news"),
   heroSection: document.getElementById("dashboard-hero-section"),
   catalogSection: document.getElementById("catalog-section"),
   financasView: document.getElementById("financas-view"),
@@ -417,14 +427,19 @@ function aplicarNavegacao(nav) {
     b.classList.toggle("active", b.dataset.nav === nav)
   );
 
+  const isDashboard = nav === "dashboard";
+  const isCatalogo = nav === "catalogo";
   const isFinancas = nav === "financas";
-  const showDashboard = nav === "dashboard";
 
-  els.heroSection.classList.toggle("hidden", !showDashboard);
-  els.catalogSection.classList.toggle("hidden", isFinancas);
+  els.marketView.classList.toggle("hidden", !isDashboard);
+  els.heroSection.classList.toggle("hidden", !isCatalogo);
+  els.catalogSection.classList.toggle("hidden", !isCatalogo);
   els.financasView.classList.toggle("hidden", !isFinancas);
 
-  if (isFinancas) {
+  if (isDashboard) {
+    initMercadoWidgets();
+    carregarNoticiasMercado();
+  } else if (isFinancas) {
     carregarFinancas();
   }
 }
@@ -859,11 +874,151 @@ function atualizarPerfilUI(user) {
   }
 }
 
+// ================= MERCADO EM TEMPO REAL (TradingView + Notícias) =================
+function mountTradingViewWidget(container, scriptUrl, config) {
+  if (!container) return;
+  container.innerHTML = "";
+  const wrap = document.createElement("div");
+  wrap.className = "tradingview-widget-container";
+  wrap.style.width = "100%";
+  wrap.style.height = "100%";
+
+  const inner = document.createElement("div");
+  inner.className = "tradingview-widget-container__widget";
+  inner.style.width = "100%";
+  inner.style.height = "100%";
+
+  const script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = scriptUrl;
+  script.async = true;
+  script.textContent = JSON.stringify(config);
+
+  wrap.appendChild(inner);
+  wrap.appendChild(script);
+  container.appendChild(wrap);
+}
+
+function initMercadoWidgets() {
+  if (state.mercadoInicializado) return;
+  state.mercadoInicializado = true;
+
+  const miniScript = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+  const baseMini = {
+    width: "100%",
+    height: "100%",
+    locale: "br",
+    dateRange: "1M",
+    colorTheme: "dark",
+    isTransparent: true,
+    autosize: true,
+    largeChartUrl: "",
+  };
+
+  mountTradingViewWidget(els.tvMiniDolar, miniScript, {
+    ...baseMini,
+    symbol: "FX_IDC:USDBRL",
+    trendLineColor: "rgba(52, 211, 153, 1)",
+    underLineColor: "rgba(52, 211, 153, 0.16)",
+  });
+
+  mountTradingViewWidget(els.tvMiniIbov, miniScript, {
+    ...baseMini,
+    symbol: "BMFBOVESPA:IBOV",
+    trendLineColor: "rgba(229, 57, 53, 1)",
+    underLineColor: "rgba(229, 57, 53, 0.16)",
+  });
+
+  mountTradingViewWidget(els.tvMiniBtc, miniScript, {
+    ...baseMini,
+    symbol: "BINANCE:BTCUSDT",
+    trendLineColor: "rgba(245, 185, 66, 1)",
+    underLineColor: "rgba(245, 185, 66, 0.16)",
+  });
+
+  renderMainChart(state.chartSymbol);
+}
+
+function renderMainChart(symbol) {
+  state.chartSymbol = symbol;
+  document.querySelectorAll(".asset-tab").forEach((b) =>
+    b.classList.toggle("active", b.dataset.symbol === symbol)
+  );
+
+  mountTradingViewWidget(
+    els.tvMainChart,
+    "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js",
+    {
+      autosize: true,
+      symbol,
+      interval: "60",
+      timezone: "America/Sao_Paulo",
+      theme: "dark",
+      style: "1",
+      locale: "br",
+      backgroundColor: "rgba(20, 13, 12, 1)",
+      gridColor: "rgba(255, 255, 255, 0.05)",
+      allow_symbol_change: true,
+      hide_top_toolbar: false,
+      save_image: false,
+      calendar: false,
+      support_host: "https://www.tradingview.com",
+    }
+  );
+}
+
+function formatarDataNoticia(pubDate) {
+  if (!pubDate) return "";
+  const d = new Date(pubDate);
+  if (Number.isNaN(d.getTime())) return pubDate;
+  return d.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+async function carregarNoticiasMercado() {
+  try {
+    const noticias = await apiRequest(API_MERCADO_NOTICIAS);
+    if (!Array.isArray(noticias) || noticias.length === 0) {
+      els.marketNewsList.innerHTML = `<div class="cat-empty">Nenhuma notícia disponível no momento.</div>`;
+      return;
+    }
+    els.marketNewsList.innerHTML = "";
+    noticias.forEach((n) => {
+      const a = document.createElement("a");
+      a.className = "news-card";
+      a.href = n.link || "#";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = `
+        <span class="news-title">${escapeHtml(n.titulo)}</span>
+        <div class="news-meta">
+          <span class="news-source">${escapeHtml(n.fonte)}</span>
+          <span>${formatarDataNoticia(n.data)}</span>
+        </div>
+      `;
+      els.marketNewsList.appendChild(a);
+    });
+  } catch {
+    els.marketNewsList.innerHTML = `<div class="cat-empty">Não foi possível carregar as notícias agora.</div>`;
+  }
+}
+
+document.querySelectorAll(".asset-tab").forEach((btn) => {
+  btn.addEventListener("click", () => renderMainChart(btn.dataset.symbol));
+});
+
+els.btnReloadNews.addEventListener("click", carregarNoticiasMercado);
+
 function mostrarApp(user) {
   state.usuario = user;
   atualizarPerfilUI(user);
   els.authScreen.classList.add("hidden");
   els.appLayout.classList.remove("hidden");
+  aplicarNavegacao(state.activeNav || "dashboard");
   carregarItens();
   carregarFinancas();
 }

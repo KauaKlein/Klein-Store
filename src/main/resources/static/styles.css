@@ -817,15 +817,17 @@ html, body {
 }
 
 .card-status-chip.sold {
-  background: rgba(16, 185, 129, 0.26);
-  border: 1px solid rgba(52, 211, 153, 0.45);
-  color: #a7f3d0;
+  background: rgba(18, 18, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
 }
 
 .card-status-chip.stock {
-  background: rgba(245, 185, 66, 0.22);
-  border: 1px solid rgba(245, 185, 66, 0.45);
-  color: #fde68a;
+  background: rgba(18, 18, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #d4d4d8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
 }
 
 .game-card-body {
@@ -1557,6 +1559,201 @@ html, body {
   color: var(--crimson-bright);
 }
 
+/* ================= DASHBOARD / MERCADO EM TEMPO REAL ================= */
+.market-view {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.market-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.market-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.market-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  color: var(--emerald);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 10px var(--emerald);
+  animation: pulseLive 1.8s infinite;
+}
+
+@keyframes pulseLive {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+.mini-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.tv-mini-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 175px;
+  padding: 4px;
+}
+
+.tv-mini-slot {
+  width: 100%;
+  height: 175px;
+}
+
+.market-main-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.market-chart-panel,
+.market-news-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.market-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.market-asset-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.asset-tab {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 11px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.asset-tab:hover {
+  color: #fff;
+}
+
+.asset-tab.active {
+  background: var(--crimson);
+  color: #fff;
+}
+
+.tv-main-slot {
+  width: 100%;
+  height: 430px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(12, 8, 8, 0.5);
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 430px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.news-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+.news-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(229, 57, 53, 0.45);
+  transform: translateY(-1px);
+}
+
+.news-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.38;
+  color: var(--text);
+}
+
+.news-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.news-source {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
 /* ================= TELA DE LOGIN / CADASTRO ================= */
 .auth-screen {
   position: relative;
@@ -1750,6 +1947,8 @@ html, body {
   .sidebar { display: none; }
   .kpi-grid { grid-template-columns: repeat(3, 1fr); }
   .financas-grid { grid-template-columns: 1fr; }
+  .mini-charts-grid { grid-template-columns: 1fr; }
+  .market-main-grid { grid-template-columns: 1fr; }
 
   .mobile-bottom-nav {
     position: fixed;
@@ -1960,7 +2159,21 @@ html, body {
   .card-lote-tag { left: 6px; }
   .card-status-chip { right: 6px; }
 
-  /* Finanças compacto no celular */
+  /* Finanças & Mercado compactos no celular */
+  .market-title {
+    font-size: 21px;
+  }
+
+  .tv-main-slot {
+    height: 300px;
+  }
+
+  .market-chart-panel,
+  .market-news-panel {
+    padding: 12px;
+    border-radius: 13px;
+  }
+
   .financas-title {
     font-size: 21px;
   }
