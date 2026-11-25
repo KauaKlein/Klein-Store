@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Klein Store — Controle de Vendas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="4" />
+            <path d="M6 12h4" />
+            <path d="M8 10v4" />
+            <circle cx="15.5" cy="11" r="0.8" fill="currentColor" />
+            <circle cx="17.5" cy="13" r="0.8" fill="currentColor" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Klein Store</h1>
+          <span class="subtitle">Gestão de Lotes &amp; Vendas</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <span id="status-api" class="status-pill status-pending">
+          <span class="status-dot"></span>
+          <span class="status-text">Aguardando /api/jogos</span>
+        </span>
+
+        <button id="btn-api-info" class="btn btn-ghost" type="button" title="Ver endpoints esperados pela tela">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+          <span>API</span>
+        </button>
+
+        <button id="btn-recarregar" class="btn btn-ghost btn-icon-only" type="button" title="Recarregar dados">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+            <polyline points="21 3 21 9 15 9" />
+          </svg>
+        </button>
+
+        <button id="btn-novo-jogo" class="btn btn-primary" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>Novo Item</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+      <!-- Cards de resumo -->
+      <section class="summary-grid" aria-label="Resumo financeiro">
+        <article class="summary-card">
+          <div class="summary-top">
+            <span class="summary-label">Itens no catálogo</span>
+            <span class="summary-icon icon-neutral">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              </svg>
+            </span>
+          </div>
+          <strong id="stat-total-jogos" class="summary-value mono">0</strong>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-top">
+            <span class="summary-label">Total Pago (Custo)</span>
+            <span class="summary-icon icon-blue">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </span>
+          </div>
+          <strong id="stat-total-preco" class="summary-value mono">R$ 0,00</strong>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-top">
+            <span class="summary-label">Receita (Vendidos)</span>
+            <span class="summary-icon icon-violet">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+              </svg>
+            </span>
+          </div>
+          <strong id="stat-total-venda" class="summary-value mono">R$ 0,00</strong>
+        </article>
+
+        <article class="summary-card card-highlight">
+          <div class="summary-top">
+            <span class="summary-label">Lucro Estimado</span>
+            <span class="summary-icon icon-emerald">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="8 12 11 15 16 9" />
+              </svg>
+            </span>
+          </div>
+          <strong id="stat-lucro" class="summary-value mono positive">R$ 0,00</strong>
+        </article>
+      </section>
+
+      <!-- Painel da tabela -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              id="input-busca"
+              class="search-input"
+              type="text"
+              placeholder="Buscar por nome do jogo ou número do lote..."
+            />
+          </div>
+          <span id="table-count" class="table-count">0 registros</span>
+        </div>
+
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-badge">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="4" />
+              <path d="M6 12h4" />
+              <path d="M8 10v4" />
+              <circle cx="15.5" cy="11" r="0.8" fill="currentColor" />
+              <circle cx="17.5" cy="13" r="0.8" fill="currentColor" />
+            </svg>
+          </div>
+          <h2>Nenhum item cadastrado</h2>
+          <p>
+            Assim que o endpoint <code>/api/jogos</code> responder no seu back-end,
+            seus itens aparecerão aqui. Clique em <strong>Novo Item</strong> para cadastrar.
+          </p>
+        </div>
+
+        <div id="table-wrapper" class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="col-lote">Lote</th>
+                <th class="col-nome">Item</th>
+                <th class="col-money">Valor Pago</th>
+                <th class="col-money">Valor Venda</th>
+                <th class="col-money">Lucro</th>
+                <th class="col-status">Status</th>
+                <th class="col-actions">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="jogos-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: Criar / Editar Item -->
+  <div id="modal-jogo" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-jogo-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-jogo-title">Novo Item</h2>
+          <p class="modal-subtitle">Informe os dados do lote, valores, capa e status</p>
+        </div>
+        <button class="modal-close" data-close-modal type="button" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="form-jogo">
+        <input type="hidden" id="input-id" />
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="input-id-lote">ID do Lote</label>
+            <input
+              id="input-id-lote"
+              class="field-input mono"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Ex: 1"
+              required
+            />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="input-status">Situação</label>
+            <label class="checkbox-card" for="input-status">
+              <input id="input-status" type="checkbox" />
+              <span id="label-status-text">Em estoque</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="input-nome">Nome do Jogo</label>
+          <input
+            id="input-nome"
+            class="field-input"
+            type="text"
+            placeholder="Ex: Elden Ring — Edição Padrão"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="input-valor-pago">Valor Pago (R$)</label>
+            <input
+              id="input-valor-pago"
+              class="field-input mono"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              required
+            />
+          </div>
+
+          <div class="field-group" id="group-valor-venda">
+            <label class="field-label" for="input-valor-venda">Valor da Venda (R$)</label>
+            <input
+              id="input-valor-venda"
+              class="field-input mono"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="input-img">URL da Imagem (opcional)</label>
+          <input
+            id="input-img"
+            class="field-input"
+            type="url"
+            placeholder="https://exemplo.com/capa.jpg"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-ghost" data-close-modal type="button">Cancelar</button>
+          <button id="btn-salvar-jogo" class="btn btn-primary" type="submit">Salvar Registro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Contrato da API -->
+  <div id="modal-api" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-api-title">
+    <div class="modal-card modal-wide">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-api-title">Contrato da API</h2>
+          <p class="modal-subtitle">Alinhado com a sua entidade <code>ItemCadastrado</code></p>
+        </div>
+        <button class="modal-close" data-close-modal type="button" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="api-docs">
+        <pre class="code-block">{
+  "id": 1,
+  "idLote": 10,
+  "nome": "Elden Ring",
+  "valorPago": 150.00,
+  "valorVenda": 220.00,
+  "status": false,
+  "img": "https://exemplo.com/capa.jpg"
+}</pre>
+
+        <div class="endpoint-list">
+          <div class="endpoint-item">
+            <span class="method method-get">GET</span>
+            <code>/api/jogos</code>
+            <span class="endpoint-desc">Lista todos os itens</span>
+          </div>
+          <div class="endpoint-item">
+            <span class="method method-post">POST</span>
+            <code>/api/jogos</code>
+            <span class="endpoint-desc">Cadastra um novo item</span>
+          </div>
+          <div class="endpoint-item">
+            <span class="method method-put">PUT</span>
+            <code>/api/jogos/{id}</code>
+            <span class="endpoint-desc">Atualiza item / status</span>
+          </div>
+          <div class="endpoint-item">
+            <span class="method method-delete">DELETE</span>
+            <code>/api/jogos/{id}</code>
+            <span class="endpoint-desc">Remove pelo ID</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" data-close-modal type="button">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificações -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
